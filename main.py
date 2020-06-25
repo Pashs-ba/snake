@@ -28,33 +28,32 @@ class AppleSprite(BaseSprite):
         self.image.fill((255, 0, 0))
 
     def update(self):
-
-        for part in SNAKE.sprites():
-            if part.rect.x == self.rect.x and part.rect.y == self.rect.y:
-                print('Yam !')
-                globals()['SCORE'] += 1  # very very bag code TODO Refactoring
-                last_part = SNAKE.sprites()[-1]
-                if last_part.direction[0] == 1:
-                    SnakePartSprite(last_part.rect.x - 10,
-                                    last_part.rect.y,
-                                    last_part.direction[0],
-                                    last_part.direction[1])
-                elif last_part.direction[0] == -1:
-                    SnakePartSprite(last_part.rect.x + 10,
-                                    last_part.rect.y,
-                                    last_part.direction[0],
-                                    last_part.direction[1])
-                elif last_part.direction[1] == 1:
-                    SnakePartSprite(last_part.rect.x,
-                                    last_part.rect.y-10,
-                                    last_part.direction[0],
-                                    last_part.direction[1])
-                elif last_part.direction[0] == -1:
-                    SnakePartSprite(last_part.rect.x,
-                                    last_part.rect.y+10,
-                                    last_part.direction[0],
-                                    last_part.direction[1])
-                self.kill()
+        part = SNAKE.sprites()[0]
+        if part.rect.x == self.rect.x and part.rect.y == self.rect.y:
+            print('Yam !')
+            globals()['SCORE'] += 1  # very very bag code TODO Refactoring
+            last_part = SNAKE.sprites()[-1]
+            if last_part.direction[0] == 1:
+                SnakePartSprite(last_part.rect.x - 10,
+                                last_part.rect.y,
+                                last_part.direction[0],
+                                last_part.direction[1])
+            elif last_part.direction[0] == -1:
+                SnakePartSprite(last_part.rect.x + 10,
+                                last_part.rect.y,
+                                last_part.direction[0],
+                                last_part.direction[1])
+            elif last_part.direction[1] == 1:
+                SnakePartSprite(last_part.rect.x,
+                                last_part.rect.y-10,
+                                last_part.direction[0],
+                                last_part.direction[1])
+            elif last_part.direction[0] == -1:
+                SnakePartSprite(last_part.rect.x,
+                                last_part.rect.y+10,
+                                last_part.direction[0],
+                                last_part.direction[1])
+            self.kill()
 
 
 class SnakePartSprite(BaseSprite):
@@ -104,6 +103,7 @@ if __name__ == '__main__':
         for i in pygame.event.get():
             if i.type == pygame.QUIT:
                 print(SCORE)
+                print(len(SNAKE.sprites()))
                 exit()
             if i.type == pygame.USEREVENT:
                 APPLES.add(AppleSprite(random.randint(0, X / 10) * 10, random.randint(0, Y / 10) * 10))
