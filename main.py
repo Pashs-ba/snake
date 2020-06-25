@@ -9,7 +9,7 @@ surface = pygame.display.set_mode((X, Y))
 clock = pygame.time.Clock()
 
 
-pygame.time.set_timer(pygame.USEREVENT, 2000)
+
 pygame.time.set_timer(pygame.USEREVENT+1, 200)
 
 
@@ -26,6 +26,7 @@ class AppleSprite(BaseSprite):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.image.fill((255, 0, 0))
+        self.add(APPLES)
 
     def update(self):
         part = SNAKE.sprites()[0]
@@ -53,6 +54,7 @@ class AppleSprite(BaseSprite):
                                 last_part.rect.y+10,
                                 last_part.direction[0],
                                 last_part.direction[1])
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, {}))
             self.kill()
 
 
@@ -95,6 +97,7 @@ if __name__ == '__main__':
     SNAKE = pygame.sprite.Group()
     CHANGE_DIRECTION = pygame.sprite.Group()
     SnakePartSprite(X / 2, Y / 2, 0, 0)
+    AppleSprite(random.randint(0, X / 10) * 10, random.randint(0, Y / 10) * 10)
     SCORE = 0
     while True:
         clock.tick(FPS)
@@ -106,7 +109,7 @@ if __name__ == '__main__':
                 print(len(SNAKE.sprites()))
                 exit()
             if i.type == pygame.USEREVENT:
-                APPLES.add(AppleSprite(random.randint(0, X / 10) * 10, random.randint(0, Y / 10) * 10))
+                AppleSprite(random.randint(0, X / 10) * 10, random.randint(0, Y / 10) * 10)
             if i.type == pygame.KEYDOWN:
                 if i.key == pygame.K_LEFT:
                     ChangeDirectionSprite(SNAKE.sprites()[0].rect.x, SNAKE.sprites()[0].rect.y, -1, 0)
@@ -118,10 +121,10 @@ if __name__ == '__main__':
                     ChangeDirectionSprite(SNAKE.sprites()[0].rect.x, SNAKE.sprites()[0].rect.y, 0, 1)
             if i.type == pygame.USEREVENT+1:
                 SNAKE.update()
+        APPLES.update()
+        CHANGE_DIRECTION.update()
 
         CHANGE_DIRECTION.draw(surface)
         APPLES.draw(surface)
         SNAKE.draw(surface)
-        APPLES.update()
-        CHANGE_DIRECTION.update()
         pygame.display.update()
