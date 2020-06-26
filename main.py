@@ -34,26 +34,11 @@ class AppleSprite(BaseSprite):
             print('Yam !')
             globals()['SCORE'] += 1  # very very bag code TODO Refactoring
             last_part = SNAKE.sprites()[-1]
-            if last_part.direction[0] == 1:
-                SnakePartSprite(last_part.rect.x - 10,
-                                last_part.rect.y,
-                                last_part.direction[0],
-                                last_part.direction[1])
-            elif last_part.direction[0] == -1:
-                SnakePartSprite(last_part.rect.x + 10,
-                                last_part.rect.y,
-                                last_part.direction[0],
-                                last_part.direction[1])
-            elif last_part.direction[1] == 1:
-                SnakePartSprite(last_part.rect.x,
-                                last_part.rect.y-10,
-                                last_part.direction[0],
-                                last_part.direction[1])
-            elif last_part.direction[0] == -1:
-                SnakePartSprite(last_part.rect.x,
-                                last_part.rect.y+10,
-                                last_part.direction[0],
-                                last_part.direction[1])
+            print(last_part.direction)
+            SnakePartSprite(last_part.rect.x - last_part.direction[0]*10,
+                            last_part.rect.y - last_part.direction[1]*10,
+                            last_part.direction[0],
+                            last_part.direction[1])
             pygame.event.post(pygame.event.Event(pygame.USEREVENT, {}))
             self.kill()
 
@@ -66,6 +51,9 @@ class SnakePartSprite(BaseSprite):
         self.add(SNAKE)
 
     def update(self):
+        if 0 > self.rect.x or self.rect.x > X or 0 > self.rect.y or self.rect.y > X:
+            pygame.event.post(pygame.event.Event(pygame.QUIT, {}))
+            self.kill()
         for block in CHANGE_DIRECTION.sprites():
             if block.rect.x == self.rect.x and block.rect.y == self.rect.y:
                 self.direction = block.direction
@@ -100,7 +88,6 @@ if __name__ == '__main__':
     AppleSprite(random.randint(0, X / 10) * 10, random.randint(0, Y / 10) * 10)
     SCORE = 0
     while True:
-        clock.tick(FPS)
         surface.fill((0, 0, 0))
 
         for i in pygame.event.get():
@@ -127,4 +114,5 @@ if __name__ == '__main__':
         CHANGE_DIRECTION.draw(surface)
         APPLES.draw(surface)
         SNAKE.draw(surface)
+        clock.tick(FPS)
         pygame.display.update()
