@@ -1,92 +1,22 @@
-import random
-import pygame
+import time
+from entities import *
 
-FPS = 60
-X = 600
-Y = 400
+
 pygame.init()
 surface = pygame.display.set_mode((X, Y))
 clock = pygame.time.Clock()
 
-
-
 pygame.time.set_timer(pygame.USEREVENT+1, 200)
 
 
-class BaseSprite(pygame.sprite.Sprite):
-    size = 10
-
-    def __init__(self, x, y):
-        super().__init__()
-        self.image: pygame.Surface = pygame.Surface((self.size, self.size))
-        self.rect: pygame.Rect = pygame.Rect((x, y, self.size, self.size))
-
-
-class AppleSprite(BaseSprite):
-    def __init__(self, x, y):
-        super().__init__(x, y)
-        self.image.fill((255, 0, 0))
-        self.add(APPLES)
-
-    def update(self):
-        part = SNAKE.sprites()[0]
-        if part.rect.x == self.rect.x and part.rect.y == self.rect.y:
-            print('Yam !')
-            globals()['SCORE'] += 1  # very very bag code TODO Refactoring
-            last_part = SNAKE.sprites()[-1]
-            print(last_part.direction)
-            SnakePartSprite(last_part.rect.x - last_part.direction[0]*10,
-                            last_part.rect.y - last_part.direction[1]*10,
-                            last_part.direction[0],
-                            last_part.direction[1])
-            pygame.event.post(pygame.event.Event(pygame.USEREVENT, {}))
-            self.kill()
-
-
-class SnakePartSprite(BaseSprite):
-    def __init__(self, x, y, x_dir, y_dir):
-        super().__init__(x, y)
-        self.direction = [x_dir, y_dir]
-        self.image.fill((255, 255, 255))
-        self.add(SNAKE)
-
-    def update(self):
-        if 0 > self.rect.x or self.rect.x > X or 0 > self.rect.y or self.rect.y > X:
-            pygame.event.post(pygame.event.Event(pygame.QUIT, {}))
-            self.kill()
-        for block in CHANGE_DIRECTION.sprites():
-            if block.rect.x == self.rect.x and block.rect.y == self.rect.y:
-                self.direction = block.direction
-        if 0 <= self.rect.x <= X:
-            self.rect.x += self.direction[0]*self.size
-        if 0 <= self.rect.y <= Y:
-            self.rect.y += self.direction[1]*self.size
-
-
-class ChangeDirectionSprite(BaseSprite):
-    def __init__(self, x, y, x_dir, y_dir):
-        super().__init__(x, y)
-        self.direction = [x_dir, y_dir]
-        self.image.fill((0, 0, 0))
-        self.add(CHANGE_DIRECTION)
-
-    def update(self):
-        a = True
-        for part in SNAKE.sprites():
-            if part.rect.x == self.rect.x and part.rect.y == self.rect.y:
-                a = False
-
-        if a:
-            self.kill()
-
-
 if __name__ == '__main__':
-    APPLES = pygame.sprite.Group()
-    SNAKE = pygame.sprite.Group()
-    CHANGE_DIRECTION = pygame.sprite.Group()
-    SnakePartSprite(X / 2, Y / 2, 0, 0)
-    AppleSprite(random.randint(0, X / 10) * 10, random.randint(0, Y / 10) * 10)
-    SCORE = 0
+    SnakePartSprite(random.randint(0, 10) * 10, 
+                    random.randint(0, 10) * 10, 
+                    0, 
+                    0)
+    AppleSprite(random.randint(0, 100 / 10) * 10, 
+                random.randint(0, 100 / 10) * 10)
+    end_game = pygame.font.SysFont(None, 36)
     while True:
         surface.fill((0, 0, 0))
 
@@ -94,9 +24,14 @@ if __name__ == '__main__':
             if i.type == pygame.QUIT:
                 print(SCORE)
                 print(len(SNAKE.sprites()))
-                exit()
+                surface.blit(end_game.render('SCORE {}'.format(len(SNAKE.sprites())), 1, (0, 255, 0)), (0, 50))
+                pygame.display.update()
+                time.sleep(10)
+                quit()
             if i.type == pygame.USEREVENT:
-                AppleSprite(random.randint(0, X / 10) * 10, random.randint(0, Y / 10) * 10)
+                print('q')
+                a = AppleSprite(random.randint(0, 10) * 10, random.randint(0, 10) * 10)
+                print(a.rect.x, a.rect.y)
             if i.type == pygame.KEYDOWN:
                 if i.key == pygame.K_LEFT:
                     ChangeDirectionSprite(SNAKE.sprites()[0].rect.x, SNAKE.sprites()[0].rect.y, -1, 0)
@@ -114,5 +49,6 @@ if __name__ == '__main__':
         CHANGE_DIRECTION.draw(surface)
         APPLES.draw(surface)
         SNAKE.draw(surface)
-        clock.tick(FPS)
         pygame.display.update()
+        clock.tick(FPS)
+        
